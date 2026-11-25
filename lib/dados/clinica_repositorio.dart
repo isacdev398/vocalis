@@ -8,7 +8,6 @@ import '../modelos/solicitacao.dart';
 import '../modelos/usuario.dart';
 import 'banco_dados.dart';
 
-/// Nomes das coleções no banco.
 abstract final class Colecoes {
   static const usuarios = 'usuarios';
   static const pacientes = 'pacientes';
@@ -19,20 +18,13 @@ abstract final class Colecoes {
   static const cobrancas = 'cobrancas';
 }
 
-/// Único ponto de acesso aos dados da clínica.
-///
-/// Recebe o [BancoDados] por injeção de dependência: no app real é o
-/// Firestore; na demonstração e nos testes, um banco em memória. As telas
-/// nunca falam com o banco diretamente.
-///
-/// As consultas usam no máximo um filtro de igualdade e a ordenação é feita
-/// em Dart, assim o projeto não precisa de índices compostos no Firebase.
+// As telas só falam com o banco por aqui.
+// Cada consulta tem no máx. um filtro e a ordenação é feita aqui,
+// assim não precisa criar índice composto no Firebase.
 class ClinicaRepositorio {
   ClinicaRepositorio(this.banco);
 
   final BancoDados banco;
-
-  // ---------------------------------------------------------------- Usuários
 
   Stream<Usuario?> usuario(String uid) => banco
       .documento(Colecoes.usuarios, uid)
@@ -41,14 +33,14 @@ class ClinicaRepositorio {
   Future<void> salvarUsuario(Usuario u) =>
       banco.gravar(Colecoes.usuarios, u.id, u.toMap());
 
-  /// Colaboradores (todos menos clientes), ordenados: dono, fonos, recepção.
+  // todo mundo menos cliente; dono, fonos, recepção
   Stream<List<Usuario>> equipe() => banco.colecao(Colecoes.usuarios).map((l) {
     final lista = l
         .map((d) => Usuario.fromMap(d.id, d.dados))
         .where((u) => u.perfil != Perfil.cliente)
         .toList();
     const ordem = [Perfil.dono, Perfil.fono, Perfil.recepcao];
-    // Ordena pelo nome sem o título ("Dra. Ana" vem antes de "Dr. Marcos").
+    // ignora o Dr./Dra. na ordem alfabética
     String chave(Usuario u) => u.nome.replaceFirst(RegExp(r'^Dra?\.\s*'), '');
     lista.sort((a, b) {
       final c = ordem.indexOf(a.perfil).compareTo(ordem.indexOf(b.perfil));
@@ -57,7 +49,6 @@ class ClinicaRepositorio {
     return lista;
   });
 
-  /// Profissionais que atendem (aparecem nos filtros da agenda).
   Stream<List<Usuario>> profissionais() => equipe().map(
     (l) => l.where((u) => u.ehProfissionalClinico && !u.convidado).toList(),
   );
@@ -65,8 +56,7 @@ class ClinicaRepositorio {
   Future<void> atualizarPermissoes(String uid, Permissoes p) =>
       banco.atualizar(Colecoes.usuarios, uid, {'permissoes': p.toMap()});
 
-  /// Pré-cadastra um colaborador. Ele cria a senha ao se cadastrar
-  /// com o mesmo e-mail (ver [vincularConvite]).
+  // convite: a pessoa cria a senha quando se cadastra com esse e-mail
   Future<void> convidarColaborador({
     required String nome,
     required String email,
@@ -93,8 +83,7 @@ class ClinicaRepositorio {
     );
   }
 
-  /// Se existir convite para este e-mail, devolve-o e apaga o documento
-  /// provisório (o definitivo é criado com o uid do Auth).
+  // apaga o doc do convite, o definitivo fica com o uid do Auth
   Future<Usuario?> vincularConvite(String email) async {
     final docs = await banco.buscar(
       Colecoes.usuarios,
@@ -110,8 +99,6 @@ class ClinicaRepositorio {
     }
     return null;
   }
-
-  // --------------------------------------------------------------- Pacientes
 
   Stream<List<Paciente>> pacientes() => banco
       .colecao(Colecoes.pacientes)
@@ -131,8 +118,6 @@ class ClinicaRepositorio {
     return id;
   }
 
-  // ------------------------------------------------------------ Agendamentos
-
   static List<Agendamento> _agendamentos(List<Documento> l) =>
       l.map((d) => Agendamento.fromMap(d.id, d.dados)).toList()
         ..sort((a, b) => a.inicio.compareTo(b.inicio));
@@ -140,8 +125,7 @@ class ClinicaRepositorio {
   Stream<List<Agendamento>> agendamentos() =>
       banco.colecao(Colecoes.agendamentos).map(_agendamentos);
 
-  /// Só os agendamentos com início em [de, ate). Usado pela agenda (semana
-  /// visível) e pelo painel (mês atual e anterior) no lugar da coleção inteira.
+  // [de, ate) - agenda pede a semana, painel pede 2 meses
   Stream<List<Agendamento>> agendamentosEntre(DateTime de, DateTime ate) =>
       banco
           .colecaoEntre(
@@ -152,7 +136,6 @@ class ClinicaRepositorio {
           )
           .map(_agendamentos);
 
-  /// Quantas sessões o paciente já tem (leitura única, filtrada por paciente).
   Future<int> contarSessoesDoPaciente(String pacienteId) async =>
       (await banco.buscar(
         Colecoes.agendamentos,
@@ -189,8 +172,6 @@ class ClinicaRepositorio {
 
   Future<void> alterarStatus(String id, StatusAgendamento status) =>
       banco.atualizar(Colecoes.agendamentos, id, {'status': status.name});
-
-  // ------------------------------------------------------------ Solicitações
 
   static List<SolicitacaoReagendamento> _solicitacoes(List<Documento> l) =>
       l.map((d) => SolicitacaoReagendamento.fromMap(d.id, d.dados)).toList()
@@ -242,8 +223,7 @@ class ClinicaRepositorio {
     );
   }
 
-  /// Confirma a troca: move o agendamento e fecha a solicitação numa única
-  /// operação atômica (lote), para os 4 portais verem a mesma coisa.
+  // move o agendamento e fecha a solicitação no mesmo batch
   Future<void> aprovarSolicitacao(
     SolicitacaoReagendamento s, {
     required DateTime novoInicio,
@@ -270,8 +250,6 @@ class ClinicaRepositorio {
         'resolvidoEm': gravarData(DateTime.now()),
       });
 
-  // --------------------------------------------------------------- Evoluções
-
   Stream<Evolucao?> evolucao(String agendamentoId) => banco
       .documento(Colecoes.evolucoes, agendamentoId)
       .map((d) => d == null ? null : Evolucao.fromMap(d.id, d.dados));
@@ -287,7 +265,6 @@ class ClinicaRepositorio {
   Future<void> salvarEvolucao(Evolucao e) =>
       banco.gravar(Colecoes.evolucoes, e.id, e.toMap());
 
-  /// Assina a evolução e encerra o atendimento.
   Future<void> finalizarEvolucao(Evolucao e) => banco.lote([
     Gravar(Colecoes.evolucoes, e.id, e.copyWith(finalizada: true).toMap()),
     Atualizar(Colecoes.agendamentos, e.id, {
@@ -295,8 +272,6 @@ class ClinicaRepositorio {
       'evolucaoSalva': true,
     }),
   ]);
-
-  // -------------------------------------------------------------- Exercícios
 
   Stream<List<Exercicio>> exerciciosDoPaciente(String pacienteId) => banco
       .colecao(Colecoes.exercicios, campo: 'pacienteId', igualA: pacienteId)
@@ -312,8 +287,7 @@ class ClinicaRepositorio {
     e.toMap(),
   );
 
-  /// Registra uma prática feita em casa: soma 1 na meta semanal e dá uma
-  /// estrela ao paciente. Ao bater a meta o exercício é concluído.
+  // +1 na meta da semana e +1 estrela; bateu a meta, conclui
   Future<void> registrarPratica(Exercicio e) {
     final feitas = e.praticasSemana + 1;
     return banco.lote([
@@ -327,8 +301,6 @@ class ClinicaRepositorio {
       }),
     ]);
   }
-
-  // --------------------------------------------------------------- Cobranças
 
   static List<Cobranca> _cobrancas(List<Documento> l) =>
       l.map((d) => Cobranca.fromMap(d.id, d.dados)).toList()

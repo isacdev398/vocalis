@@ -1,7 +1,6 @@
 import 'conversao.dart';
 
-/// Registro clínico de uma sessão no formato SOAP (`evolucoes/{id}`).
-/// O id é o mesmo do agendamento: uma evolução por sessão.
+// id = id do agendamento (uma evolução por sessão)
 class Evolucao {
   const Evolucao({
     required this.id,
@@ -26,20 +25,20 @@ class Evolucao {
   final String profissionalNome;
   final DateTime data;
 
-  /// S — relato do paciente/família.
+  // S: relato do paciente/família
   final String subjetivo;
 
-  /// O — o que foi medido/testado.
+  // O: o que foi medido
   final String objetivo;
 
-  /// A — parecer fonoaudiológico.
+  // A: parecer
   final String avaliacao;
 
-  /// P — plano de conduta / próximos passos.
+  // P: conduta
   final String plano;
   final String acolhimento;
 
-  /// Índice de precisão articulatória: acertos / tentativas.
+  // acertos / tentativas
   final int acertos;
   final int tentativas;
   final bool finalizada;

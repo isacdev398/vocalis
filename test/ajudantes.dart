@@ -1,7 +1,6 @@
 import 'package:fonoclin/modelos/agendamento.dart';
 import 'package:fonoclin/modelos/cobranca.dart';
 
-/// Cria agendamentos curtos para os testes.
 Agendamento ag(
   String id,
   DateTime inicio, {

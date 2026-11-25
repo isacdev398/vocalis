@@ -17,7 +17,6 @@ void main() {
   });
 
   Future<Sessao> abrirApp(WidgetTester tester) async {
-    // Tela de celular, como no protótipo.
     tester.view.physicalSize = const Size(430, 932);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -88,7 +87,6 @@ void main() {
     expect(find.text('Olá, Juliana'), findsOneWidget);
     expect(find.text('Portal do Cliente'), findsOneWidget);
     expect(find.textContaining('Maitê Silva'), findsWidgets);
-    // Abas do perfil cliente (sem as abas de gestão).
     expect(find.text('Exercícios'), findsOneWidget);
     expect(find.text('Financeiro'), findsNothing);
   });
@@ -119,7 +117,7 @@ void main() {
     expect(Rotas.podeAcessar(recepcao, Rotas.financeiro), isTrue);
     expect(Rotas.podeAcessar(recepcao, Rotas.atendimento('1')), isFalse);
     expect(Rotas.podeAcessar(recepcao, Rotas.equipe), isFalse);
-    // Sigilo: sem CRFa não abre prontuário, mesmo com a permissão marcada.
+    // sem CRFa não abre prontuário mesmo com a permissão
     expect(Rotas.podeAcessar(fonoSemCrfa, Rotas.atendimento('1')), isFalse);
     expect(Rotas.podeAcessar(cliente, Rotas.cliente), isTrue);
     expect(Rotas.podeAcessar(cliente, Rotas.agenda), isFalse);

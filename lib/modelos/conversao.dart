@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Converte valores lidos do Firestore para DateTime.
 DateTime lerData(Object? valor, [DateTime? padrao]) {
   if (valor is Timestamp) return valor.toDate();
   if (valor is DateTime) return valor;

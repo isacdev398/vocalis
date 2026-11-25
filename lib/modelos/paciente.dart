@@ -1,6 +1,5 @@
 import 'conversao.dart';
 
-/// Paciente em acompanhamento na clínica (`pacientes/{id}`).
 class Paciente {
   const Paciente({
     required this.id,
@@ -26,18 +25,16 @@ class Paciente {
   final String telefone;
   final String convenio;
 
-  /// Área da fonoaudiologia (Linguagem, Voz, Audiologia…).
+  // Linguagem, Voz, Audiologia...
   final String area;
 
-  /// Hipótese diagnóstica / foco terapêutico.
   final String hipotese;
 
-  /// Etiqueta curta exibida no atendimento (ex.: "Fricativas").
+  // ex: Fricativas
   final String foco;
   final String profissionalId;
   final String profissionalNome;
 
-  /// Gamificação dos exercícios em casa.
   final int estrelas;
 
   String get primeiroNome => nome.split(' ').first;

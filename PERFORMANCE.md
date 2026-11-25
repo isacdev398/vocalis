@@ -15,7 +15,7 @@ O app tem duas chaves de compilação ([`lib/core/perf.dart`](lib/core/perf.dart
 | `ESTRESSE=5000` | A demonstração gera 5.000 cobranças no mês atual e 5.000 agendamentos antigos (2 a 14 meses atrás). |
 | `OTIMIZADO=false` | Liga a versão **antes**: lista montada inteira numa `Column`, cálculos dentro do `build()` na thread de UI e consultas que baixam a coleção inteira. |
 
-> ⚠️ Meça **sempre em modo profile e num celular Android** (ou no Windows
+> Meça **sempre em modo profile e num celular Android** (ou no Windows
 > desktop). O modo debug é lento de propósito, e na Web não existem Isolates.
 
 Com o celular ligado no USB (depuração USB ativada):
@@ -187,7 +187,7 @@ Resultado: **1.227 ms → 47 ms**.
     primeira abertura;
   - aplicar `ConteudoLista` também na agenda e no histórico do paciente.
 
-### Observação honesta sobre o modo "antes"
+### Sobre o modo "antes"
 
 O código original do Financeiro mostrava 20 lançamentos por vez com um botão
 "Ver mais". O modo `OTIMIZADO=false` reproduz a abordagem ingênua (todos os

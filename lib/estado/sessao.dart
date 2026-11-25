@@ -10,17 +10,15 @@ import '../modelos/paciente.dart';
 import '../modelos/usuario.dart';
 import '../servicos/auth_servico.dart';
 
-/// Um "lugar" onde os dados moram: autenticação + banco.
 class Backend {
   Backend({required this.auth, required this.repo, required this.local});
 
   final AuthServico auth;
   final ClinicaRepositorio repo;
 
-  /// true = memória do navegador (demonstração); false = Firebase real.
+  // true = demo em memória
   final bool local;
 
-  /// Cria um backend local já com o cenário da demonstração.
   static Future<Backend> demonstracao({
     DateTime? agora,
     int estresse = Perf.estresse,
@@ -37,10 +35,7 @@ class Backend {
 
 enum EstadoSessao { carregando, deslogado, logado }
 
-/// Estado global de autenticação, compartilhado pelo Provider.
-///
-/// Guarda quem está logado e qual backend está ativo. O roteador escuta esta
-/// classe (refreshListenable) para redirecionar entre login e portais.
+// Quem tá logado e qual backend. O go_router escuta isso pra redirecionar.
 class Sessao extends ChangeNotifier {
   Sessao({Backend? firebase, Future<Backend> Function()? criarDemo})
     : _firebase = firebase, // ignore: prefer_initializing_formals
@@ -62,12 +57,10 @@ class Sessao extends ChangeNotifier {
   Usuario? get usuario => _usuario;
   bool get firebaseConfigurado => _firebase != null;
 
-  /// Está navegando pela demonstração (dados fictícios em memória).
   bool get emDemonstracao => _ativo?.local ?? true;
 
   ClinicaRepositorio get repo => _ativo!.repo;
 
-  /// Liga a sessão no backend principal (Firebase, ou local se não houver).
   Future<void> iniciar() async {
     if (_firebase != null) {
       _usar(_firebase);
@@ -100,7 +93,7 @@ class Sessao extends ChangeNotifier {
     _estado = EstadoSessao.carregando;
     notifyListeners();
     _subUsuario = _ativo!.repo.usuario(uid).listen((u) {
-      // O documento pode demorar um instante para existir logo após o cadastro.
+      // logo depois do cadastro o doc às vezes ainda não existe
       if (u == null) return;
       _usuario = u;
       _estado = EstadoSessao.logado;
@@ -116,8 +109,7 @@ class Sessao extends ChangeNotifier {
   Future<void> redefinirSenha(String email) =>
       _ativo!.auth.redefinirSenha(email);
 
-  /// Cria a conta no Auth e o documento do usuário no banco.
-  /// Para clientes, também cria a ficha do paciente acompanhado.
+  // cliente já ganha a ficha do paciente junto
   Future<void> cadastrar({
     required String nome,
     required String email,
@@ -163,12 +155,9 @@ class Sessao extends ChangeNotifier {
     );
   }
 
-  /// Repositório da demonstração (o Seletor de Perfis mostra dados ao vivo).
   Future<ClinicaRepositorio> repoDemonstracao() async =>
       (await _obterDemo()).repo;
 
-  /// Seletor de Perfis: entra na demonstração como um dos personagens.
-  /// Completa quando o perfil já foi carregado.
   Future<Usuario> entrarNaDemonstracao(String uid) async {
     final demo = await _obterDemo();
     _usar(demo);
@@ -198,7 +187,6 @@ class Sessao extends ChangeNotifier {
     }
   }
 
-  /// No Firebase real, grava o cenário de exemplo para apresentar o app.
   Future<void> popularDadosDeExemplo() => popularDadosDemo(repo.banco);
 
   @override

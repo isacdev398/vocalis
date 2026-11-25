@@ -2,16 +2,14 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Um documento lido do banco: id + campos.
 typedef Documento = ({String id, Map<String, dynamic> dados});
 
-/// Valor especial para somar a um campo numérico (como FieldValue.increment).
+// equivalente ao FieldValue.increment
 class Incremento {
   const Incremento(this.valor);
   final num valor;
 }
 
-/// Operações que podem ir num lote atômico.
 sealed class Operacao {
   const Operacao(this.colecao, this.id);
   final String colecao;
@@ -32,19 +30,11 @@ class Apagar extends Operacao {
   const Apagar(super.colecao, super.id);
 }
 
-/// Contrato mínimo de banco de documentos usado pelo app.
-///
-/// Existem duas implementações:
-/// - [FirestoreBanco]: Cloud Firestore de verdade (dados na nuvem);
-/// - [MemoriaBanco]: tudo em memória, para a demonstração e os testes.
+// Interface do banco. FirestoreBanco = nuvem, MemoriaBanco = demo e testes.
 abstract class BancoDados {
-  /// Observa uma coleção inteira, ou só os documentos com `campo == igualA`.
   Stream<List<Documento>> colecao(String nome, {String? campo, Object? igualA});
 
-  /// Observa só os documentos com `de <= campo < ate` (campo de data).
-  ///
-  /// Consulta de intervalo num único campo: o Firestore usa o índice
-  /// automático e baixa só o pedaço pedido, em vez da coleção inteira.
+  // de <= campo < ate. Range num campo só usa o índice automático do Firestore.
   Stream<List<Documento>> colecaoEntre(
     String nome, {
     required String campo,
@@ -52,20 +42,16 @@ abstract class BancoDados {
     required DateTime ate,
   });
 
-  /// Observa um documento (null se não existir).
   Stream<Documento?> documento(String colecao, String id);
 
-  /// Leitura única de uma consulta.
   Future<List<Documento>> buscar(
     String colecao, {
     String? campo,
     Object? igualA,
   });
 
-  /// Gera um id novo para a coleção.
   String novoId(String colecao);
 
-  /// Aplica as operações de forma atômica.
   Future<void> lote(List<Operacao> operacoes);
 
   Future<void> gravar(String colecao, String id, Map<String, dynamic> dados) =>
@@ -80,9 +66,6 @@ abstract class BancoDados {
   Future<void> apagar(String colecao, String id) => lote([Apagar(colecao, id)]);
 }
 
-// --------------------------------------------------------------- Firestore
-
-/// Adaptador para o Cloud Firestore.
 class FirestoreBanco extends BancoDados {
   FirestoreBanco(this.db);
   final FirebaseFirestore db;
@@ -149,7 +132,7 @@ class FirestoreBanco extends BancoDados {
 
   @override
   Future<void> lote(List<Operacao> operacoes) async {
-    // O Firestore aceita até 500 operações por batch.
+    // limite do Firestore: 500 por batch
     for (var i = 0; i < operacoes.length; i += 400) {
       final batch = db.batch();
       for (final op in operacoes.skip(i).take(400)) {
@@ -168,10 +151,7 @@ class FirestoreBanco extends BancoDados {
   }
 }
 
-// ----------------------------------------------------------------- Memória
-
-/// Banco em memória com atualização em tempo real (streams), usado na
-/// demonstração e nos testes. Os dados somem ao recarregar a página.
+// Some tudo ao recarregar a página.
 class MemoriaBanco extends BancoDados {
   final _colecoes = <String, Map<String, Map<String, dynamic>>>{};
   final _mudancas = StreamController<String>.broadcast(sync: true);
@@ -186,7 +166,6 @@ class MemoriaBanco extends BancoDados {
         (id: e.key, dados: Map.of(e.value)),
   ];
 
-  /// Emite o estado atual e depois a cada mudança na coleção.
   Stream<T> _observar<T>(String nome, T Function() ler) {
     late StreamController<T> c;
     StreamSubscription<String>? sub;
@@ -253,7 +232,7 @@ class MemoriaBanco extends BancoDados {
 
   @override
   Future<void> lote(List<Operacao> operacoes) async {
-    // Valida antes de aplicar, para o lote ser "tudo ou nada".
+    // valida tudo antes pra não aplicar pela metade
     for (final op in operacoes) {
       if (op is Atualizar && !_col(op.colecao).containsKey(op.id)) {
         throw StateError('Documento ${op.colecao}/${op.id} não existe.');
@@ -272,7 +251,7 @@ class MemoriaBanco extends BancoDados {
       }
       alteradas.add(op.colecao);
     }
-    // Avisa os ouvintes de forma assíncrona, como o Firestore.
+    // assíncrono igual o Firestore
     await Future<void>.delayed(Duration.zero);
     alteradas.forEach(_mudancas.add);
   }

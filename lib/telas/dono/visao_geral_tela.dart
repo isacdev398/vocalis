@@ -32,7 +32,7 @@ typedef _EntradaIndicadores = ({
   Periodo periodo,
 });
 
-/// Roda dentro do Isolate (por isso é uma função de topo).
+// top-level por causa do Isolate
 IndicadoresClinica _calcularIndicadores(_EntradaIndicadores e) =>
     IndicadoresClinica.calcular(
       agendamentos: e.agendamentos,
@@ -42,7 +42,6 @@ IndicadoresClinica _calcularIndicadores(_EntradaIndicadores e) =>
       periodo: e.periodo,
     );
 
-/// Dono — "Visão Geral da Clínica" (Stitch).
 class VisaoGeralTela extends StatefulWidget {
   const VisaoGeralTela({super.key});
 
@@ -58,8 +57,7 @@ class _VisaoGeralTelaState extends State<VisaoGeralTela> {
     final repo = context.watch<ClinicaRepositorio>();
     final usuario = context.watch<Sessao>().usuario!;
 
-    // Otimizado: o painel só usa o mês atual e o anterior (mais a semana que
-    // pode virar o mês), então baixa só esse intervalo.
+    // só precisa do mês atual e do anterior (+ uma semana de folga)
     final hoje = DateTime.now();
     final de = DateTime(hoje.year, hoje.month - 1, 1);
     final ate = DateTime(hoje.year, hoje.month + 1, 8);
@@ -75,7 +73,7 @@ class _VisaoGeralTelaState extends State<VisaoGeralTela> {
       ),
       builder: (context, d) {
         final t = DateTime.now();
-        // Arredondado ao minuto para a memoização do Calculado funcionar.
+        // arredonda pro minuto, senão o Calculado recalcula toda hora
         final agora = DateTime(t.year, t.month, t.day, t.hour, t.minute);
         final profissionais = d.equipe
             .where((u) => u.ehProfissionalClinico && !u.convidado)
@@ -191,7 +189,7 @@ class _VisaoGeralTelaState extends State<VisaoGeralTela> {
         ),
         const SizedBox(height: 12),
 
-        // Sessões
+        // sessões
         Cartao(
           faixa: Cores.primaria,
           child: Column(
@@ -281,7 +279,7 @@ class _VisaoGeralTelaState extends State<VisaoGeralTela> {
         ),
         const SizedBox(height: 12),
 
-        // Financeiro resumido
+        // financeiro
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -370,7 +368,7 @@ class _VisaoGeralTelaState extends State<VisaoGeralTela> {
         _CartaoDesmarques(ind: ind, solicitacoes: d.solicitacoes),
         const SizedBox(height: 24),
 
-        // Salas
+        // salas
         TituloSecao(
           'Ocupação das salas',
           icone: Icons.meeting_room_outlined,
@@ -452,7 +450,7 @@ class _VisaoGeralTelaState extends State<VisaoGeralTela> {
         ),
         const SizedBox(height: 24),
 
-        // Equipe
+        // equipe
         TituloSecao(
           'Equipe',
           icone: Icons.badge_outlined,

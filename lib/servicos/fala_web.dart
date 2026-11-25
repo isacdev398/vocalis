@@ -1,6 +1,5 @@
 import 'package:web/web.dart' as web;
 
-/// Fala o texto em português usando a Web Speech API do navegador.
 Future<bool> falar(String texto) async {
   try {
     final sintese = web.window.speechSynthesis;

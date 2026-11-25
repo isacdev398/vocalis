@@ -1,4 +1,3 @@
-/// Validadores de formulário (retornam a mensagem de erro ou null).
 abstract final class Validacao {
   static final _email = RegExp(r'^[\w.+-]+@[\w-]+(\.[\w-]+)+$');
 
@@ -25,7 +24,7 @@ abstract final class Validacao {
     return null;
   }
 
-  /// Registro do Conselho de Fonoaudiologia, ex.: "CRFa 2-19402".
+  // ex.: CRFa 2-19402
   static String? crfa(String? v) {
     if (v == null || v.trim().isEmpty) return 'Informe o CRFa';
     if (!RegExp(

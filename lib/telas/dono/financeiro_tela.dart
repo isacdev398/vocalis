@@ -23,11 +23,10 @@ enum _Filtro {
 
 typedef _EntradaResumo = ({List<Cobranca> todas, DateTime mes, DateTime hoje});
 
-/// Roda dentro do Isolate (por isso é uma função de topo).
+// top-level por causa do Isolate
 ResumoFinanceiro _calcularResumo(_EntradaResumo e) =>
     ResumoFinanceiro.calcular(e.todas, mes: e.mes, hoje: e.hoje);
 
-/// Dono — "Financeiro e Receitas" (Stitch).
 class FinanceiroTela extends StatefulWidget {
   const FinanceiroTela({super.key});
 
@@ -46,8 +45,7 @@ class _FinanceiroTelaState extends State<FinanceiroTela> {
     _mes = DateTime(_mes.year, _mes.month + delta);
   });
 
-  /// Otimizado: espera o usuário parar de digitar (250 ms) antes de filtrar,
-  /// em vez de reconstruir a tela a cada tecla.
+  // debounce de 250 ms na busca
   void _aoDigitar(String v) {
     if (!Perf.otimizado) {
       setState(() => _busca = v);
@@ -275,7 +273,6 @@ class _FinanceiroTelaState extends State<FinanceiroTela> {
     ];
 
     if (Perf.otimizado) {
-      // Só os cartões visíveis são construídos.
       return ConteudoLista(
         cabecalho: cabecalho,
         quantidade: lista.length,
@@ -283,7 +280,7 @@ class _FinanceiroTelaState extends State<FinanceiroTela> {
         rodape: rodape,
       );
     }
-    // "Antes": todos os cartões construídos de uma vez numa Column.
+    // versão antiga: tudo numa Column
     return Conteudo(
       children: [
         ...cabecalho,

@@ -11,7 +11,6 @@ import '../../modelos/agendamento.dart';
 import '../../modelos/usuario.dart';
 import '../../widgets/comuns.dart';
 
-/// Dono — "Gestão de Equipe e Permissões" (Stitch).
 class EquipeTela extends StatefulWidget {
   const EquipeTela({super.key});
 

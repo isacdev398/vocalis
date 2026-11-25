@@ -21,7 +21,6 @@ class _Dados {
   final List<Exercicio> exercicios;
 }
 
-/// Fono — "Prescrição de Exercícios" (Stitch).
 class PrescricaoTela extends StatelessWidget {
   const PrescricaoTela({super.key, required this.agendamentoId});
   final String agendamentoId;
@@ -73,7 +72,6 @@ class _FormularioState extends State<_Formulario> {
   static const _frequencias = ['1x ao dia', '2x ao dia', '3x por semana'];
   static const _duracoes = [3, 5, 10, 15];
 
-  /// Emojis lúdicos para palavras comuns nos treinos.
   static const _emojis = {
     'sapato': '👟',
     'sapo': '🐸',

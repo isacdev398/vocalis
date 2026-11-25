@@ -10,7 +10,6 @@ enum Periodo {
   const Periodo(this.rotulo);
   final String rotulo;
 
-  /// Intervalo [inicio, fim) do período que contém [agora].
   (DateTime, DateTime) intervalo(DateTime agora) {
     final dia = agora.inicioDoDia;
     return switch (this) {
@@ -26,7 +25,6 @@ enum Periodo {
     };
   }
 
-  /// Mesmo intervalo, deslocado para o período anterior.
   (DateTime, DateTime) anterior(DateTime agora) {
     final (i, f) = intervalo(agora);
     return switch (this) {
@@ -43,7 +41,6 @@ enum Periodo {
   }
 }
 
-/// Números do painel "Visão Geral" do dono, calculados a partir dos dados reais.
 class IndicadoresClinica {
   const IndicadoresClinica({
     required this.sessoes,
@@ -61,17 +58,16 @@ class IndicadoresClinica {
     required this.atendimentosPorProfissional,
   });
 
-  /// Sessões ativas (não canceladas/faltas) no período.
+  // sem canceladas e faltas
   final int sessoes;
   final int concluidos;
 
-  /// Pacientes na recepção ou em atendimento agora.
   final int emAndamento;
 
-  /// Horários disponíveis no período (profissionais × grade × dias úteis).
+  // profissionais x grade x dias úteis
   final int capacidade;
 
-  /// Variação em relação ao período anterior (0.04 = +4%).
+  // 0.04 = +4% sobre o período anterior
   final double? variacaoSessoes;
   final double faturamentoMes;
   final double faturamentoMesAnterior;
@@ -80,10 +76,9 @@ class IndicadoresClinica {
   final int desmarquesMes;
   final int sessoesMes;
 
-  /// Sala → ocupação de 0 a 1 no período.
+  // sala -> ocupação 0..1
   final Map<String, double> ocupacaoSalas;
 
-  /// profissionalId → atendimentos no período.
   final Map<String, int> atendimentosPorProfissional;
 
   int get sessoesHoje => sessoes;
@@ -130,7 +125,7 @@ class IndicadoresClinica {
         )
         .length;
 
-    // Hoje conta como dia de trabalho mesmo se for fim de semana.
+    // hoje conta mesmo se for sábado/domingo
     final dias = periodo == Periodo.hoje
         ? 1
         : diasUteis(intervalo.$1, intervalo.$2);

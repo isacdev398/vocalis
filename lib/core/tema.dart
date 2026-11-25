@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Cores do design system "Clinical Warmth & Human Clarity" (Stitch).
 abstract final class Cores {
   static const primaria = Color(0xFF00685F);
   static const primariaContainer = Color(0xFF008378);
@@ -26,7 +25,7 @@ abstract final class Cores {
   static const bordaInput = Color(0xFFCBD5E1);
   static const divisor = Color(0xFFF1F5F9);
 
-  // Semânticas
+  // status
   static const sucesso = Color(0xFF10B981);
   static const sucessoFundo = Color(0xFFECFDF5);
   static const sucessoTexto = Color(0xFF065F46);
@@ -70,7 +69,7 @@ abstract final class Sombras {
   ];
 }
 
-/// Tema do app. Em testes passamos [fontesWeb] = false para não baixar fontes.
+// nos testes fontesWeb = false pra não baixar fonte
 class TemaApp {
   static bool fontesWeb = true;
 

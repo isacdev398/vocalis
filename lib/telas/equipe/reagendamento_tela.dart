@@ -21,7 +21,6 @@ class _Dados {
   final Paciente? paciente;
 }
 
-/// Recepção — "Confirmação de Reagendamento" (Stitch).
 class ReagendamentoTela extends StatelessWidget {
   const ReagendamentoTela({super.key, required this.solicitacaoId});
   final String solicitacaoId;
@@ -228,7 +227,7 @@ class _ConteudoState extends State<_Conteudo> {
         ),
         const SizedBox(height: 16),
 
-        // Paciente
+        // paciente
         Cartao(
           child: Column(
             children: [
@@ -351,7 +350,7 @@ class _ConteudoState extends State<_Conteudo> {
         ),
         const SizedBox(height: 20),
 
-        // Checagem automática
+        // checagem de conflito
         Cartao(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -687,7 +686,6 @@ class _ItemChecagem extends StatelessWidget {
   );
 }
 
-/// Escolha de outro horário livre do mesmo profissional.
 class _EscolherHorario extends StatefulWidget {
   const _EscolherHorario({
     required this.agendamentos,

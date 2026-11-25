@@ -33,7 +33,6 @@ class _DadosAtendimento {
   final List<Agendamento> doPaciente;
 }
 
-/// Fono — "Atendimento Clínico e SOAP" (Stitch).
 class AtendimentoTela extends StatelessWidget {
   const AtendimentoTela({super.key, required this.agendamentoId});
   final String agendamentoId;
@@ -138,7 +137,7 @@ class _EditorSoapState extends State<_EditorSoap> {
     );
   }
 
-  /// Auto-salvamento: grava o rascunho 1,5 s depois da última digitação.
+  // salva o rascunho 1,5 s depois de parar de digitar
   void _agendarSalvamento() {
     if (_ev?.finalizada ?? false) return;
     _debounce?.cancel();
@@ -224,7 +223,7 @@ class _EditorSoapState extends State<_EditorSoap> {
 
     return Conteudo(
       children: [
-        // ---------------------------------------------- Cabeçalho do profissional
+        // cabeçalho do profissional
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -405,7 +404,7 @@ class _EditorSoapState extends State<_EditorSoap> {
           const SizedBox(height: 16),
         ],
 
-        // ------------------------------------------------------------ Paciente
+        // paciente
         Cartao(
           faixa: Cores.primaria,
           child: Column(
@@ -505,7 +504,7 @@ class _EditorSoapState extends State<_EditorSoap> {
         ),
         const SizedBox(height: 20),
 
-        // ---------------------------------------------------------------- SOAP
+        // SOAP
         Row(
           children: [
             const Icon(Icons.verified_user_outlined),
@@ -675,7 +674,7 @@ class _EditorSoapState extends State<_EditorSoap> {
         ),
         const SizedBox(height: 20),
 
-        // -------------------------------------------------- Áudio de referência
+        // áudio de referência
         Cartao(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -749,7 +748,7 @@ class _EditorSoapState extends State<_EditorSoap> {
         ),
         const SizedBox(height: 20),
 
-        // ---------------------------------------------------------------- Ações
+        // ações
         if (Rotas.podeAcessar(u, Rotas.prescrever(_ag.id)))
           SizedBox(
             height: 56,

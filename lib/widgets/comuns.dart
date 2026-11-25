@@ -7,7 +7,6 @@ import '../core/perf.dart';
 import '../core/tema.dart';
 import '../modelos/agendamento.dart';
 
-/// Cartão branco do design system (nível 1), com faixa lateral opcional.
 class Cartao extends StatelessWidget {
   const Cartao({
     super.key,
@@ -62,7 +61,6 @@ class Cartao extends StatelessWidget {
   }
 }
 
-/// Bloco cinza claro usado dentro dos cartões.
 class Bloco extends StatelessWidget {
   const Bloco({
     super.key,
@@ -86,7 +84,6 @@ class Bloco extends StatelessWidget {
   );
 }
 
-/// Pílula de status (chip compacto, arredondado).
 class Pilula extends StatelessWidget {
   const Pilula(
     this.texto, {
@@ -164,7 +161,6 @@ class Pilula extends StatelessWidget {
   );
 }
 
-/// Avatar com iniciais (ou emoji/ícone).
 class Avatar extends StatelessWidget {
   const Avatar(
     this.nome, {
@@ -180,7 +176,7 @@ class Avatar extends StatelessWidget {
   final Color? fundo;
   final Color cor;
 
-  /// Bolinha de status no canto (ex.: online).
+  // bolinha no canto (online)
   final Color? indicador;
 
   static const _paleta = [
@@ -233,7 +229,6 @@ class Avatar extends StatelessWidget {
   }
 }
 
-/// Ícone dentro de um quadrado arredondado colorido.
 class IconeQuadrado extends StatelessWidget {
   const IconeQuadrado(
     this.icone, {
@@ -259,7 +254,6 @@ class IconeQuadrado extends StatelessWidget {
   );
 }
 
-/// Rótulo em maiúsculas pequenas ("PRÓXIMA CONSULTA").
 class Sobrelinha extends StatelessWidget {
   const Sobrelinha(this.texto, {super.key, this.cor = Cores.textoSuave});
   final String texto;
@@ -324,7 +318,6 @@ class BarraProgresso extends StatelessWidget {
   );
 }
 
-/// Botão cinza secundário do design ("Detalhes", "Ficha", "Check-in").
 class BotaoCinza extends StatelessWidget {
   const BotaoCinza({
     super.key,
@@ -365,8 +358,8 @@ class BotaoCinza extends StatelessWidget {
   }
 }
 
-/// Mantém a assinatura de um Stream entre rebuilds e só recria quando
-/// [chave] muda. Evita "piscar" e assinaturas duplicadas no Firestore.
+// Segura a assinatura do stream entre rebuilds e só refaz quando a chave
+// muda. Sem isso a tela piscava e abria listener duplicado no Firestore.
 class Observar<T> extends StatefulWidget {
   const Observar({
     super.key,
@@ -453,14 +446,13 @@ class EstadoVazio extends StatelessWidget {
   );
 }
 
-/// Recursos que dependem de integrações externas (WhatsApp, PIX, NF-e,
-/// gravação de áudio) são simulados nesta versão. Sempre avisamos o usuário.
+// WhatsApp, PIX, NF-e, gravação etc. ainda não estão integrados
 void avisarSimulado(BuildContext context, String acao) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(
       SnackBar(
-        content: Text('$acao — recurso simulado nesta demonstração.'),
+        content: Text('$acao: recurso simulado na demonstração.'),
         duration: const Duration(seconds: 3),
       ),
     );
@@ -472,7 +464,6 @@ void avisar(BuildContext context, String texto) {
     ..showSnackBar(SnackBar(content: Text(texto)));
 }
 
-/// Aparência de cada status de agendamento.
 ({Color fundo, Color texto, Color faixa, IconData icone}) estiloStatus(
   StatusAgendamento s,
 ) => switch (s) {
@@ -520,7 +511,6 @@ void avisar(BuildContext context, String texto) {
   ),
 };
 
-/// Cronômetro que se reconstrói a cada segundo.
 class Relogio extends StatefulWidget {
   const Relogio({super.key, required this.builder, this.intervalo = 1});
   final Widget Function(BuildContext context, DateTime agora) builder;
@@ -552,7 +542,7 @@ class _RelogioState extends State<Relogio> {
   Widget build(BuildContext context) => widget.builder(context, DateTime.now());
 }
 
-/// Limita a largura do conteúdo em telas largas (web) mantendo o layout mobile.
+// largura máx. 720 pra não esticar na web
 class Conteudo extends StatelessWidget {
   const Conteudo({super.key, required this.children, this.padding});
   final List<Widget> children;
@@ -575,11 +565,8 @@ class Conteudo extends StatelessWidget {
   );
 }
 
-/// Igual ao [Conteudo], mas com uma lista longa construída sob demanda.
-///
-/// O [Conteudo] monta tudo numa Column: com 5.000 itens, os 5.000 widgets
-/// são criados e medidos de uma vez. Aqui o `SliverList.builder` só cria os
-/// itens que estão na tela (mais uma pequena folga) e recicla os que saem.
+// Igual o Conteudo, mas a lista é lazy (SliverList.builder).
+// Com 5.000 itens o Conteudo montava os 5.000 de uma vez.
 class ConteudoLista extends StatelessWidget {
   const ConteudoLista({
     super.key,
@@ -595,7 +582,6 @@ class ConteudoLista extends StatelessWidget {
   final Widget Function(BuildContext context, int indice) item;
   final List<Widget> rodape;
 
-  /// Espaço vertical entre os itens.
   final double espaco;
 
   @override
@@ -606,7 +592,7 @@ class ConteudoLista extends StatelessWidget {
     );
     return LayoutBuilder(
       builder: (context, c) {
-        // Mesma largura máxima (720) do Conteudo, centralizada.
+        // mesma largura do Conteudo
         final lateral = c.maxWidth > 752 ? (c.maxWidth - 720) / 2 : 16.0;
         return CustomScrollView(
           slivers: [
@@ -635,17 +621,12 @@ class ConteudoLista extends StatelessWidget {
   }
 }
 
-/// Calcula um resultado pesado a partir de [entrada] e mostra com [builder].
-///
-/// Versão otimizada ([Perf.otimizado]):
-/// - memoização: só recalcula quando a [entrada] muda (por `==`), e não a
-///   cada rebuild (digitar na busca, trocar filtro, rolar a tela...);
-/// - o cálculo roda num Isolate ([calcularForaDaUI]), longe da thread de UI;
-/// - enquanto recalcula, continua mostrando o resultado anterior.
-///
-/// Versão "antes": calcula dentro do build(), na thread de UI, toda vez.
-///
-/// [calcular] precisa ser uma função de topo ou estática (regra do Isolate).
+// Faz o cálculo pesado fora do build:
+// - só recalcula se a entrada mudar (==)
+// - roda no Isolate
+// - mostra o resultado anterior enquanto não termina
+// Com Perf.otimizado = false calcula no build mesmo, como era antes.
+// calcular tem que ser top-level ou static.
 class Calculado<E, R> extends StatefulWidget {
   const Calculado({
     super.key,
@@ -688,7 +669,7 @@ class _CalculadoState<E, R> extends State<Calculado<E, R>> {
       widget.entrada,
       rotulo: widget.rotulo,
     );
-    // Descarta resultados velhos se a entrada mudou no meio do caminho.
+    // a entrada mudou no meio, joga fora
     if (!mounted || geracao != _geracao) return;
     setState(() {
       _resultado = r;

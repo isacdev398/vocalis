@@ -31,7 +31,6 @@ class _DadosCliente {
   final List<SolicitacaoReagendamento> solicitacoes;
 }
 
-/// Portal do Cliente — "Início e Próxima Sessão" (Stitch).
 class InicioClienteTela extends StatelessWidget {
   const InicioClienteTela({super.key});
 
@@ -485,7 +484,6 @@ class _CartaoProximaConsulta extends StatelessWidget {
   );
 }
 
-/// Formulário do pedido de troca (vai para a fila da recepção).
 class _FolhaReagendamento extends StatefulWidget {
   const _FolhaReagendamento({
     required this.agendamento,

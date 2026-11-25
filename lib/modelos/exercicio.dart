@@ -2,13 +2,12 @@ import 'conversao.dart';
 
 enum StatusExercicio { ativo, concluido }
 
-/// Palavra-estímulo exibida na prática (com um emoji lúdico).
 class Estimulo {
   const Estimulo(this.palavra, [this.emoji = '🗣️']);
   final String palavra;
   final String emoji;
 
-  /// Separação silábica simples, usada como "transcrição" de apoio.
+  // separação silábica bem simples, só pra mostrar na tela
   String get silabas => _silabas(palavra);
 
   Map<String, dynamic> toMap() => {'palavra': palavra, 'emoji': emoji};
@@ -33,7 +32,6 @@ class Estimulo {
   }
 }
 
-/// Exercício domiciliar prescrito pela fono (`exercicios/{id}`).
 class Exercicio {
   const Exercicio({
     required this.id,
@@ -64,7 +62,7 @@ class Exercicio {
   final DateTime criadoEm;
   final String objetivo;
 
-  /// Ex.: "Fonema Fricativo Alveolar"
+  // ex: Fonema Fricativo Alveolar
   final String categoria;
   final String descricao;
   final String instrucao;

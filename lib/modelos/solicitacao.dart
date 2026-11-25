@@ -2,8 +2,7 @@ import 'conversao.dart';
 
 enum StatusSolicitacao { pendente, aprovada, recusada }
 
-/// Pedido de troca de horário feito pelo responsável no Portal do Cliente
-/// e avaliado pela recepção (`solicitacoes/{id}`).
+// pedido de troca de horário (cliente pede, recepção avalia)
 class SolicitacaoReagendamento {
   const SolicitacaoReagendamento({
     required this.id,
@@ -42,7 +41,7 @@ class SolicitacaoReagendamento {
   final String resolvidoPor;
   final DateTime? resolvidoEm;
 
-  /// Horário efetivamente confirmado (pode diferir do pretendido).
+  // pode ser diferente do que o cliente pediu
   final DateTime? horarioFinal;
 
   bool get pendente => status == StatusSolicitacao.pendente;

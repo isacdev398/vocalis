@@ -17,7 +17,6 @@ import '../../rotas.dart';
 import '../../widgets/comuns.dart';
 import '../casca.dart';
 
-/// Dados ao vivo exibidos nos cartões do seletor.
 class _Resumo {
   _Resumo(this.agendamentos, this.exercicios, this.solicitacoes);
   final List<Agendamento> agendamentos;
@@ -25,7 +24,6 @@ class _Resumo {
   final List<SolicitacaoReagendamento> solicitacoes;
 }
 
-/// "Vocalis – Demonstração": escolha de personagem (tela do Stitch).
 class SeletorPerfisTela extends StatefulWidget {
   const SeletorPerfisTela({super.key});
 
@@ -147,7 +145,7 @@ class _SeletorPerfisTelaState extends State<SeletorPerfisTela> {
         ),
         const SizedBox(height: 20),
 
-        // ---------------------------------------------------------- Cliente
+        // cliente
         Cartao(
           faixa: Cores.primaria,
           child: Column(
@@ -250,7 +248,7 @@ class _SeletorPerfisTelaState extends State<SeletorPerfisTela> {
         ),
         const SizedBox(height: 16),
 
-        // ----------------------------------------------------------- Equipe
+        // equipe
         Cartao(
           faixa: Cores.secundaria,
           child: Column(
@@ -361,7 +359,7 @@ class _SeletorPerfisTelaState extends State<SeletorPerfisTela> {
         ),
         const SizedBox(height: 16),
 
-        // ------------------------------------------------------------- Dono
+        // dono
         Cartao(
           faixa: Cores.primaria,
           child: Column(
@@ -442,7 +440,7 @@ class _SeletorPerfisTelaState extends State<SeletorPerfisTela> {
         ),
         const SizedBox(height: 20),
 
-        // ------------------------------------------------ Cenário interligado
+        // cenário interligado
         Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(

@@ -13,7 +13,6 @@ import '../../modelos/paciente.dart';
 import '../../servicos/fala.dart';
 import '../../widgets/comuns.dart';
 
-/// Portal do Cliente — "Exercício de Fonemas" (Stitch).
 class ExerciciosTela extends StatefulWidget {
   const ExerciciosTela({super.key});
 
@@ -332,7 +331,6 @@ class _Abas extends StatelessWidget {
 
 enum _Gravacao { pronto, gravando, analisado }
 
-/// Cartão principal da prática: estímulo, áudio de referência e gravação.
 class _PraticaAtual extends StatefulWidget {
   const _PraticaAtual({
     super.key,
@@ -769,7 +767,6 @@ class _ItemConcluido extends StatelessWidget {
   );
 }
 
-/// Barrinhas animadas de "onda sonora".
 class OndaSonora extends StatefulWidget {
   const OndaSonora({super.key, required this.ativa, this.cor = Cores.primaria});
   final bool ativa;

@@ -1,8 +1,7 @@
 import 'conversao.dart';
 
-/// Ciclo de vida de um atendimento:
-/// agendado → confirmado → naRecepcao → emAtendimento → concluido
-/// (ou faltou / cancelado).
+// agendado -> confirmado -> naRecepcao -> emAtendimento -> concluido
+// (ou faltou / cancelado)
 enum StatusAgendamento {
   agendado('Agendado'),
   confirmado('Confirmado'),
@@ -23,7 +22,6 @@ enum StatusAgendamento {
       this == StatusAgendamento.cancelado;
 }
 
-/// Salas físicas da clínica.
 abstract final class Salas {
   static const todas = [
     'Sala 01 - Linguagem e Fala',
@@ -31,7 +29,6 @@ abstract final class Salas {
     'Cabine Audiometria',
   ];
 
-  /// Grade padrão de horários (início) de cada dia.
   static const grade = [
     (8, 30),
     (10, 0),
@@ -44,7 +41,6 @@ abstract final class Salas {
   static const duracaoPadraoMin = 45;
 }
 
-/// Um horário marcado na agenda (`agendamentos/{id}`).
 class Agendamento {
   const Agendamento({
     required this.id,
@@ -76,7 +72,7 @@ class Agendamento {
   final DateTime inicio;
   final DateTime fim;
 
-  /// Terapia, Avaliação, Avaliação Audiológica, Retorno…
+  // Terapia, Avaliação, Retorno...
   final String tipo;
   final StatusAgendamento status;
   final DateTime? chegadaEm;

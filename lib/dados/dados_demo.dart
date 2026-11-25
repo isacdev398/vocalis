@@ -10,7 +10,6 @@ import '../modelos/solicitacao.dart';
 import '../modelos/usuario.dart';
 import 'banco_dados.dart';
 
-/// Contas usadas no Seletor de Perfis da demonstração.
 abstract final class ContasDemo {
   static const senha = 'demo123';
 
@@ -97,12 +96,8 @@ abstract final class ContasDemo {
   ];
 }
 
-/// Grava no banco todo o cenário da demonstração.
-/// Também é usado pelo botão "Popular dados de exemplo" no Firebase real.
-///
-/// [estresse] > 0 acrescenta essa quantidade de cobranças no mês atual e de
-/// agendamentos antigos, para medir o desempenho com muitos dados
-/// (ver PERFORMANCE.md).
+// Também usado no botão "Popular dados de exemplo".
+// estresse > 0 gera cobranças e agendamentos antigos extras (PERFORMANCE.md)
 Future<void> popularDadosDemo(
   BancoDados banco, {
   DateTime? agora,
@@ -291,7 +286,7 @@ Future<void> popularDadosDemo(
     'p-gabriel': 190.0,
   };
 
-  // Histórico: dias úteis do mês anterior até ontem.
+  // histórico: dias úteis do mês passado até ontem
   final inicioHistorico = DateTime(hoje.year, hoje.month - 1, 1);
   for (
     var dia = inicioHistorico;
@@ -344,8 +339,7 @@ Future<void> popularDadosDemo(
       }
     }
   }
-  // Sessões do Gabriel/Sophia antigas e não pagas viram "pagas" para não
-  // poluir a lista; ficam em aberto só as do cenário abaixo.
+  // sessões antigas do Gabriel/Sophia ficam pagas, senão enchem a lista
   for (var i = 0; i < cobrancas.length; i++) {
     final c = cobrancas[i];
     if (!c.paga) {
@@ -363,7 +357,7 @@ Future<void> popularDadosDemo(
     }
   }
 
-  // ---- Hoje: o cenário do protótipo.
+  // hoje: o cenário do protótipo
   final dPedro = novo(
     'p-pedro',
     ContasDemo.ana,
@@ -447,7 +441,7 @@ Future<void> popularDadosDemo(
     }),
   ]);
 
-  // ---- Próximos dias úteis: só manhãs (deixa a tarde livre para trocas).
+  // próximos dias úteis: só manhãs (deixa a tarde livre para trocas)
   for (var i = 1; i <= 10; i++) {
     final dia = DateTime(hoje.year, hoje.month, hoje.day + i);
     if (dia.weekday > DateTime.friday) continue;
@@ -473,7 +467,7 @@ Future<void> popularDadosDemo(
     escritor.set('agendamentos', a.id, a.toMap());
   }
 
-  // ---- Evoluções (SOAP) já assinadas.
+  // evoluções (SOAP) já assinadas
   final evolucaoPedro = Evolucao(
     id: dPedro.id,
     pacienteId: 'p-pedro',
@@ -543,7 +537,7 @@ Future<void> popularDadosDemo(
     escritor.set('evolucoes', e.id, e.toMap());
   }
 
-  // ---- Solicitação de reagendamento pendente (Maitê: hoje 14h → +2 dias úteis 15h).
+  // solicitação de reagendamento pendente (Maitê: hoje 14h → +2 dias úteis 15h)
   var pretendido = DateTime(hoje.year, hoje.month, hoje.day + 2);
   while (pretendido.weekday > DateTime.friday) {
     pretendido = pretendido.add(const Duration(days: 1));
@@ -593,7 +587,7 @@ Future<void> popularDadosDemo(
     ).toMap(),
   );
 
-  // ---- Exercícios domiciliares.
+  // exercícios domiciliares
   final exercicios = [
     Exercicio(
       id: 'ex-maite-s',
@@ -657,7 +651,7 @@ Future<void> popularDadosDemo(
     escritor.set('exercicios', e.id, e.toMap());
   }
 
-  // ---- Mensalidades e cobranças do cenário.
+  // mensalidades e cobranças do cenário
   final mesAnterior = DateTime(hoje.year, hoje.month - 1, 1);
   const mensalidades = {
     'p-maite': ('Plano Mensal Fonoaudiologia • 4 sessões', 480.0),
@@ -668,7 +662,7 @@ Future<void> popularDadosDemo(
   for (final pid in mensalistas) {
     final (desc, valor) = mensalidades[pid]!;
     final p = porId[pid]!;
-    // Mês anterior: tudo pago.
+    // mês passado tá todo pago
     cobrancas.add(
       Cobranca(
         id: 'mens-$pid-ant',
@@ -759,9 +753,8 @@ Future<void> popularDadosDemo(
   await escritor.concluir();
 }
 
-/// Massa de dados para o teste de estresse: [n] cobranças no mês atual (elas
-/// aparecem na lista do Financeiro) e [n] agendamentos de 2 a 14 meses atrás
-/// (o painel precisa percorrê-los, mas não mudam os números exibidos).
+// n cobranças no mês atual (aparecem no Financeiro) e n agendamentos de
+// 2 a 14 meses atrás (o painel percorre mas não mudam os números)
 void _gerarEstresse(
   _Escritor escritor,
   DateTime hoje,
@@ -870,7 +863,6 @@ void _gerarEstresse(
   }
 }
 
-/// Junta todas as gravações e envia num lote só.
 class _Escritor {
   _Escritor(this.banco);
   final BancoDados banco;

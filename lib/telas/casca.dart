@@ -8,7 +8,6 @@ import '../modelos/usuario.dart';
 import '../rotas.dart';
 import '../widgets/comuns.dart';
 
-/// Uma aba da barra de navegação inferior.
 class AbaNavegacao {
   const AbaNavegacao(this.rotulo, this.icone, this.iconeAtivo, this.caminho);
   final String rotulo;
@@ -17,8 +16,7 @@ class AbaNavegacao {
   final String caminho;
 }
 
-/// Estrutura comum dos portais: barra superior "Vocalis" e barra de
-/// navegação inferior, cujas abas dependem do perfil logado.
+// AppBar + barra de baixo; as abas mudam conforme o perfil
 class Casca extends StatelessWidget {
   const Casca({super.key, required this.caminho, required this.child});
 
@@ -104,7 +102,7 @@ class Casca extends StatelessWidget {
     if (u == null) return const SizedBox.shrink();
 
     final abas = abasPara(u, demo: sessao.emDemonstracao);
-    // A aba ativa é a de prefixo mais longo que combina com o caminho.
+    // pega o prefixo mais longo, senão /agenda/x marcaria a aba errada
     var indice = -1;
     var maior = 0;
     for (var i = 0; i < abas.length; i++) {
@@ -309,7 +307,7 @@ class _BarraTopo extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-/// Marca do app (no protótipo havia uma imagem quebrada no lugar).
+// no Stitch era uma imagem quebrada
 class LogoFono extends StatelessWidget {
   const LogoFono({super.key, this.tamanho = 38});
   final double tamanho;

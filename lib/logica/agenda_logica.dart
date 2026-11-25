@@ -1,7 +1,6 @@
 import '../core/formatos.dart';
 import '../modelos/agendamento.dart';
 
-/// Resultado da "Checagem Automática da Clínica" antes de mover um horário.
 class Disponibilidade {
   const Disponibilidade({
     required this.profissionalLivre,
@@ -16,14 +15,12 @@ class Disponibilidade {
   bool get livre => profissionalLivre && salaLivre;
 }
 
-/// Regras da agenda, sem dependência de Flutter ou Firebase (fáceis de testar).
 abstract final class AgendaLogica {
   static List<Agendamento> doDia(List<Agendamento> todos, DateTime dia) =>
       todos.where((a) => a.inicio.mesmoDia(dia)).toList()
         ..sort((a, b) => a.inicio.compareTo(b.inicio));
 
-  /// Verifica se o profissional e a sala estão livres no intervalo.
-  /// [ignorarId] exclui o próprio agendamento que está sendo movido.
+  // ignorarId = o próprio agendamento que tá sendo movido
   static Disponibilidade verificar(
     List<Agendamento> todos, {
     required String profissionalId,
@@ -50,7 +47,6 @@ abstract final class AgendaLogica {
     );
   }
 
-  /// Horários da grade padrão sem atendimento ativo do profissional.
   static List<DateTime> horariosLivres(
     List<Agendamento> todos,
     DateTime dia, {
@@ -76,7 +72,6 @@ abstract final class AgendaLogica {
     ];
   }
 
-  /// Próxima sessão ainda não encerrada (para o Portal do Cliente).
   static Agendamento? proxima(List<Agendamento> doPaciente, DateTime agora) {
     final futuras =
         doPaciente
@@ -87,11 +82,10 @@ abstract final class AgendaLogica {
     return futuras.isEmpty ? null : futuras.first;
   }
 
-  /// Segunda-feira da semana de [dia].
   static DateTime inicioDaSemana(DateTime dia) =>
       dia.inicioDoDia.subtract(Duration(days: dia.weekday - DateTime.monday));
 
-  /// Número da semana no ano (ISO 8601), como "Semana 43".
+  // ISO 8601
   static int numeroDaSemana(DateTime dia) {
     final quinta = dia.add(Duration(days: DateTime.thursday - dia.weekday));
     final primeiroDia = DateTime(quinta.year, 1, 1);

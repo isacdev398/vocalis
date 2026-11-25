@@ -27,7 +27,6 @@ class _DadosAgenda {
       solicitacoes.where((s) => s.pendente).toList();
 }
 
-/// Recepção — "Agenda Diária" (Stitch). Também usada pela fono e pelo dono.
 class AgendaTela extends StatelessWidget {
   const AgendaTela({super.key});
 
@@ -35,7 +34,7 @@ class AgendaTela extends StatelessWidget {
   Widget build(BuildContext context) {
     final usuario = context.read<Sessao>().usuario!;
     return ChangeNotifierProvider(
-      // A fono abre a agenda já filtrada nos próprios atendimentos.
+      // fono já abre filtrada nela mesma
       create: (_) => AgendaController(
         profissionalId: usuario.perfil == Perfil.fono ? usuario.id : null,
       ),
@@ -53,8 +52,7 @@ class _AgendaConteudo extends StatelessWidget {
     final usuario = context.watch<Sessao>().usuario!;
     final ctrl = context.watch<AgendaController>();
 
-    // Otimizado: baixa só a semana visível (consulta por intervalo de datas).
-    // Ao trocar de semana a chave muda e o Observar refaz a consulta.
+    // só a semana visível; trocou de semana, a chave muda e refaz a consulta
     final semana = ctrl.inicioSemana;
     final fimSemana = DateTime(semana.year, semana.month, semana.day + 7);
 
@@ -87,7 +85,7 @@ class _AgendaConteudo extends StatelessWidget {
                 profissionalId: profissionalFiltrado.id,
               ).where((h) => h.isAfter(agora)).toList();
 
-        // Linha do tempo: atendimentos + horários livres, em ordem.
+        // atendimentos + horários livres intercalados
         final itens = <(DateTime, Widget)>[
           for (final a in doDia)
             (
@@ -742,7 +740,6 @@ class _CartaoSolicitacao extends StatelessWidget {
   }
 }
 
-/// Coluna de horários + linha vertical à esquerda dos cartões.
 class _LinhaDoTempo extends StatelessWidget {
   const _LinhaDoTempo({
     required this.inicio,

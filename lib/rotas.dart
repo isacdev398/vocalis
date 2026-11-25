@@ -18,7 +18,6 @@ import 'telas/equipe/reagendamento_tela.dart';
 import 'telas/fono/atendimento_tela.dart';
 import 'telas/fono/prescricao_tela.dart';
 
-/// Caminhos de todas as telas.
 abstract final class Rotas {
   static const entrar = '/entrar';
   static const cadastro = '/cadastro';
@@ -37,14 +36,12 @@ abstract final class Rotas {
   static const financeiro = '/financeiro';
   static const equipe = '/equipe';
 
-  /// Tela inicial de cada perfil.
   static String inicio(Usuario u) => switch (u.perfil) {
     Perfil.cliente => cliente,
     Perfil.recepcao || Perfil.fono => agenda,
     Perfil.dono => visaoGeral,
   };
 
-  /// Controle de acesso por perfil e permissões.
   static bool podeAcessar(Usuario u, String caminho) {
     if (caminho == perfis) return true;
     if (caminho.startsWith(cliente)) return u.perfil == Perfil.cliente;
@@ -76,7 +73,7 @@ GoRouter criarRoteador(Sessao sessao) {
       final caminho = state.uri.path;
       switch (sessao.estado) {
         case EstadoSessao.carregando:
-          // Seletor de perfis continua visível enquanto troca de personagem.
+          // não sai do seletor enquanto troca de personagem
           if (caminho == Rotas.perfis) return null;
           return caminho == Rotas.carregando ? null : Rotas.carregando;
         case EstadoSessao.deslogado:

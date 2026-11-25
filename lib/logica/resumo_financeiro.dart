@@ -1,6 +1,5 @@
 import '../modelos/cobranca.dart';
 
-/// Totais da tela "Gestão Financeira" para um mês.
 class ResumoFinanceiro {
   const ResumoFinanceiro({
     required this.recebido,
@@ -22,11 +21,10 @@ class ResumoFinanceiro {
   final double valorAtrasado;
   final int quantidadeAtrasadas;
 
-  /// Fração do valor recebido por forma de pagamento (soma = 1).
+  // fração por forma de pagamento, soma 1
   final Map<FormaPagamento, double> mix;
 
-  /// Cobranças que pertencem ao mês (vencimento ou pagamento no mês),
-  /// mais as em aberto de meses anteriores.
+  // do mês (venceu ou pagou no mês) + as em aberto de antes
   final List<Cobranca> lancamentos;
 
   double get ticketMedio =>
@@ -50,7 +48,6 @@ class ResumoFinanceiro {
         .toList();
     final recebido = pagasNoMes.fold(0.0, (s, c) => s + c.valor);
 
-    // Em aberto: tudo que venceu até o fim do mês e não foi pago.
     final abertas = todas
         .where((c) => !c.paga && c.vencimento.isBefore(fimDoMes))
         .toList();
@@ -66,9 +63,9 @@ class ResumoFinanceiro {
       mix[forma] = recebido == 0 ? 0 : v / recebido;
     }
 
-    // Atrasadas e pendentes primeiro, depois as pagas mais recentes.
-    // O peso é calculado uma vez por item (n vezes), e não dentro do
-    // comparador do sort (n·log n vezes, ~2 por comparação).
+    // atrasadas, pendentes, depois pagas mais recentes.
+    // Calcula o peso antes; dentro do comparador era chamado n·log n vezes
+    // e foi o que deixou isso lento (ver PERFORMANCE.md).
     final peso = <Cobranca, int>{
       for (final c in {...pagasNoMes, ...abertas})
         c: switch (c.situacao(hoje)) {

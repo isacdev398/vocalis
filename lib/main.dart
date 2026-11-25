@@ -11,8 +11,7 @@ import 'estado/sessao.dart';
 import 'firebase_options.dart';
 import 'servicos/auth_servico.dart';
 
-/// Para forçar a demonstração mesmo com Firebase configurado:
-///   flutter run -d chrome --dart-define=DEMO=true
+// --dart-define=DEMO=true força o modo demo mesmo com Firebase
 const _forcarDemo = bool.fromEnvironment('DEMO');
 
 Future<void> main() async {
@@ -26,18 +25,14 @@ Future<void> main() async {
   runApp(FonoGestaoApp(sessao: sessao));
 }
 
-/// Tenta ligar o Firebase. Se não estiver configurado, devolve null e o app
-/// segue no modo demonstração (dados em memória).
+// null = sem Firebase, segue em memória
 Future<Backend?> _conectarFirebase() async {
   if (_forcarDemo) return null;
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    // Cache local do Firestore: as leituras ficam gravadas no aparelho, o app
-    // abre e funciona sem internet, e as gravações feitas offline são enviadas
-    // quando a conexão volta. O limite evita que o cache cresça sem fim.
-    // (No Android/iOS já vem ligado; na Web precisa ser pedido.)
+    // cache offline (na web tem que ligar na mão), limitado a 50 MB
     FirebaseFirestore.instance.settings = const Settings(
       persistenceEnabled: true,
       cacheSizeBytes: 50 * 1024 * 1024,

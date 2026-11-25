@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
-/// Erro de autenticação já traduzido para exibir ao usuário.
 class AuthErro implements Exception {
   const AuthErro(this.mensagem);
   final String mensagem;
@@ -10,10 +9,7 @@ class AuthErro implements Exception {
   String toString() => mensagem;
 }
 
-/// Contrato de autenticação. As telas e o estado dependem só desta interface,
-/// então dá para trocar Firebase por uma versão local (demo/testes).
 abstract class AuthServico {
-  /// Emite o uid do usuário logado, ou null quando sai.
   Stream<String?> get mudancas;
   String? get uidAtual;
 
@@ -23,7 +19,6 @@ abstract class AuthServico {
   Future<void> sair();
 }
 
-/// Implementação real com Firebase Authentication.
 class FirebaseAuthServico implements AuthServico {
   FirebaseAuthServico([FirebaseAuth? auth])
     : _auth = auth ?? FirebaseAuth.instance;
@@ -88,8 +83,7 @@ class FirebaseAuthServico implements AuthServico {
   };
 }
 
-/// Autenticação em memória, usada no modo demonstração e nos testes.
-/// Valida e-mail e senha de verdade, mas nada sai do navegador.
+// Pra demo e testes. Valida e-mail/senha mas não sai do navegador.
 class LocalAuthServico implements AuthServico {
   final _contas = <String, ({String uid, String senha})>{};
   final _controller = StreamController<String?>.broadcast();
@@ -105,12 +99,11 @@ class LocalAuthServico implements AuthServico {
   @override
   String? get uidAtual => _uid;
 
-  /// Registra uma conta já existente (contas da demonstração).
   void registrarConta(String email, String senha, String uid) {
     _contas[email.trim().toLowerCase()] = (uid: uid, senha: senha);
   }
 
-  /// Entra direto como um usuário (Seletor de Perfis).
+  // usado pelo seletor de perfis
   void entrarComo(String uid) {
     _uid = uid;
     _controller.add(uid);

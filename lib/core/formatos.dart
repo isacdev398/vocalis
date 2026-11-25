@@ -1,6 +1,5 @@
 import 'package:intl/intl.dart';
 
-/// Funções de formatação em português do Brasil.
 abstract final class Formatos {
   static final _hora = DateFormat('HH:mm', 'pt_BR');
   static final _diaMes = DateFormat('dd/MM', 'pt_BR');
@@ -14,7 +13,7 @@ abstract final class Formatos {
   static String mesAno(DateTime d) => capitalizar(_mesAno.format(d));
   static String moeda(num valor) => _moeda.format(valor);
 
-  /// "R$ 38.600" (sem centavos) e ",00" separados, como no design.
+  // o design mostra os centavos menores, por isso separa
   static (String inteiro, String centavos) moedaPartes(num valor) {
     final texto = _moeda.format(valor);
     final i = texto.lastIndexOf(',');
@@ -34,11 +33,11 @@ abstract final class Formatos {
     return capitalizar(s);
   }
 
-  /// "Quarta-feira, 24 Out"
+  // Quarta-feira, 24 Out
   static String diaCompleto(DateTime d) =>
       '${diaSemana(d)}, ${d.day} ${mesCurto(d)}';
 
-  /// "Sex, 26/10 às 15:00"
+  // Sex, 26/10 às 15:00
   static String diaHoraCurto(DateTime d) =>
       '${diaSemanaCurto(d)}, ${diaMes(d)} às ${hora(d)}';
 
@@ -61,7 +60,6 @@ abstract final class Formatos {
     return semTitulo.split(' ').first;
   }
 
-  /// "há 22 min", "há 3 h", "há 2 dias"
   static String tempoDecorrido(DateTime desde, DateTime agora) {
     final d = agora.difference(desde);
     if (d.inMinutes < 1) return 'agora';

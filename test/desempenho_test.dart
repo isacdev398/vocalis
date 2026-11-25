@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 
 import 'ajudantes.dart';
 
-/// Testes das otimizações de desempenho (ver PERFORMANCE.md).
+// ver PERFORMANCE.md
 void main() {
   final agora = DateTime(2026, 11, 24, 10);
 
@@ -77,15 +77,14 @@ void main() {
     final relogio = Stopwatch()..start();
     final r = ResumoFinanceiro.calcular(cobrancas, mes: mes, hoje: agora);
     relogio.stop();
-    // Este é o custo que a versão "antes" paga na thread de UI a cada
-    // rebuild (cada tecla na busca, cada troca de filtro).
+    // a versão antiga pagava isso a cada tecla na busca
     // ignore: avoid_print
     print('ResumoFinanceiro.calcular(5000): ${relogio.elapsedMicroseconds} µs');
     expect(r.lancamentos, hasLength(5000));
   });
 
   Future<int> cartoesConstruidos(WidgetTester tester) async {
-    // Largura de tablet: a fonte de teste (Ahem) é bem mais larga que a real.
+    // largura de tablet, a fonte Ahem do teste é bem mais larga
     tester.view.physicalSize = const Size(1000, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -107,7 +106,7 @@ void main() {
         ),
       ),
     );
-    // A versão otimizada calcula o resumo num Isolate: espera ele voltar.
+    // espera o Isolate
     for (
       var i = 0;
       i < 100 && find.byType(Scrollable).evaluate().isEmpty;
@@ -120,7 +119,6 @@ void main() {
     }
     relogio.stop();
 
-    // Rola até a lista, para os cartões entrarem na tela.
     await tester.drag(find.byType(Scrollable).first, const Offset(0, -1500));
     await tester.pump();
 

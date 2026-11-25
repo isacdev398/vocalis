@@ -7,8 +7,7 @@ import '../modelos/solicitacao.dart';
 
 enum FiltroStatus { todos, pendentes, confirmados }
 
-/// Estado da tela de Agenda (dia escolhido, filtros e busca).
-/// Fica num ChangeNotifierProvider próprio da tela.
+// dia, filtros e busca da agenda
 class AgendaController extends ChangeNotifier {
   AgendaController({DateTime? hoje, String? profissionalId})
     : _dia = (hoje ?? DateTime.now()).inicioDoDia,
@@ -65,7 +64,6 @@ class AgendaController extends ChangeNotifier {
         .contains(q);
   }
 
-  /// Agendamentos do dia selecionado, com profissional, status e busca.
   List<Agendamento> filtrar(
     List<Agendamento> todos,
     List<SolicitacaoReagendamento> pendentes,
@@ -88,7 +86,7 @@ class AgendaController extends ChangeNotifier {
     }).toList();
   }
 
-  /// Contagens para os chips (ignoram o filtro de status).
+  // contagem dos chips (sem o filtro de status)
   ({int todos, int pendentes, int confirmados}) contagens(
     List<Agendamento> todos,
     List<SolicitacaoReagendamento> pendentes,

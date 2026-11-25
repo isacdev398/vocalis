@@ -12,7 +12,6 @@ import '../../modelos/paciente.dart';
 import '../../modelos/usuario.dart';
 import '../../widgets/comuns.dart';
 
-/// Abre a folha de "Novo agendamento".
 Future<void> abrirNovoAgendamento(
   BuildContext context, {
   required List<Usuario> profissionais,
@@ -67,8 +66,7 @@ class _NovoAgendamentoState extends State<_NovoAgendamento> {
   String _sala = Salas.todas.first;
   bool _salvando = false;
 
-  /// Agendamentos do dia escolhido: é tudo o que a checagem de conflitos e os
-  /// horários livres precisam, então a folha consulta só esse dia.
+  // só o dia escolhido, é o que a checagem de conflito precisa
   List<Agendamento> _doDia = const [];
   StreamSubscription<List<Agendamento>>? _sub;
 

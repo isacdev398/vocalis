@@ -1,11 +1,5 @@
-// ARQUIVO PROVISÓRIO.
-//
-// Ele é substituído automaticamente quando você roda:
-//   flutterfire configure
-// (veja o passo a passo no README.md).
-//
-// Enquanto o Firebase não estiver configurado, `currentPlatform` lança um erro
-// e o app inicia sozinho no MODO DEMONSTRAÇÃO, com dados em memória.
+// Provisório: o `flutterfire configure` sobrescreve este arquivo.
+// Enquanto isso o currentPlatform lança erro e o app cai no modo demo.
 
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 

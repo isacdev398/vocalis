@@ -11,7 +11,6 @@ enum FormaPagamento {
 
 enum SituacaoCobranca { paga, pendente, atrasada }
 
-/// Mensalidade ou sessão avulsa a receber (`cobrancas/{id}`).
 class Cobranca {
   const Cobranca({
     required this.id,
@@ -39,7 +38,7 @@ class Cobranca {
 
   bool get paga => pagoEm != null;
 
-  /// A situação depende do dia de hoje, por isso não é gravada no banco.
+  // depende de hoje, não vai pro banco
   SituacaoCobranca situacao(DateTime hoje) {
     if (paga) return SituacaoCobranca.paga;
     return _chaveDia(vencimento) < _chaveDia(hoje)
@@ -47,9 +46,8 @@ class Cobranca {
         : SituacaoCobranca.pendente;
   }
 
-  /// O dia como número (2026-11-24 → 20261124), para comparar datas sem
-  /// criar objetos. Criar um DateTime local é caro (consulta o fuso horário
-  /// do sistema) e isto roda milhares de vezes nas listas e na ordenação.
+  // 2026-11-24 -> 20261124. Criar DateTime local consulta o fuso do SO e
+  // isso roda milhares de vezes no sort, então compara como int.
   static int _chaveDia(DateTime d) => d.year * 10000 + d.month * 100 + d.day;
 
   int diasDeAtraso(DateTime hoje) {

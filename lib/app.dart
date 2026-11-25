@@ -31,7 +31,7 @@ class _FonoGestaoAppState extends State<FonoGestaoApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<Sessao>.value(value: widget.sessao),
-        // O repositório muda quando se entra/sai da demonstração.
+        // muda ao entrar/sair da demo
         ProxyProvider<Sessao, ClinicaRepositorio>(
           update: (_, sessao, _) => sessao.repo,
         ),

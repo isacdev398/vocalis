@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Os 4 papéis do sistema. Cada um vê um conjunto de telas.
 enum Perfil {
   cliente('Cliente / Responsável', Icons.family_restroom),
   recepcao('Recepção', Icons.support_agent),
@@ -15,7 +14,6 @@ enum Perfil {
       Perfil.values.firstWhere((p) => p.name == nome, orElse: () => cliente);
 }
 
-/// Permissões configuráveis na tela "Equipe e Permissões".
 class Permissoes {
   const Permissoes({
     this.agenda = false,
@@ -92,7 +90,6 @@ class Permissoes {
       Object.hash(agenda, cadastros, cobranca, clinico, financeiro);
 }
 
-/// Pessoa que acessa o app (documento em `usuarios/{uid}`).
 class Usuario {
   const Usuario({
     required this.id,
@@ -114,14 +111,14 @@ class Usuario {
   final String email;
   final Perfil perfil;
 
-  /// Rótulo exibido na equipe: "Titular", "Fonoaudióloga", "Recepção / Balcão"…
+  // "Titular", "Fonoaudióloga", "Recepção / Balcão"
   final String cargo;
 
-  /// Registro profissional (CRFa). Sem ele não há acesso clínico (sigilo).
+  // sem CRFa não acessa prontuário
   final String registro;
   final String especialidade;
 
-  /// Para clientes: qual paciente esta conta acompanha.
+  // só pra cliente
   final String? pacienteId;
   final String parentesco;
   final Permissoes permissoes;
