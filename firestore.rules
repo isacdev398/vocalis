@@ -1,0 +1,92 @@
+rules_version = '2';
+
+// Regras de segurança do Vocalis.
+// Cole este conteúdo em: Console do Firebase > Firestore > Regras > Publicar.
+//
+// Ideia geral:
+// - cada pessoa tem um documento em /usuarios/{uid} com "perfil" e "permissoes";
+// - clientes só enxergam os dados do próprio paciente (pacienteId);
+// - conteúdo clínico (evoluções SOAP) exige permissão clínica + CRFa (sigilo).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function logado() {
+      return request.auth != null;
+    }
+    function eu() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+    function temCadastro() {
+      return logado() && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid));
+    }
+    function equipe() {
+      return temCadastro() && eu().perfil in ['recepcao', 'fono', 'dono'];
+    }
+    function dono() {
+      return temCadastro() && eu().perfil == 'dono';
+    }
+    function clinico() {
+      return equipe() && eu().permissoes.clinico == true && eu().registro != '';
+    }
+    function financeiro() {
+      return equipe() && (eu().permissoes.cobranca == true || eu().permissoes.financeiro == true);
+    }
+    // O documento (lido ou gravado) pertence ao paciente do cliente logado.
+    function doMeuPaciente(dados) {
+      return temCadastro() && eu().pacienteId != null && dados.pacienteId == eu().pacienteId;
+    }
+    function soAltera(campos) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(campos);
+    }
+
+    match /usuarios/{uid} {
+      allow read: if logado() && (
+        request.auth.uid == uid || equipe() ||
+        resource.data.email == request.auth.token.email // convite pendente
+      );
+      // Cadastro cria o próprio documento; o dono também cria (convites, exemplo).
+      allow create: if (logado() && request.auth.uid == uid) || dono();
+      // Ninguém altera o próprio perfil/permissões, só o dono.
+      allow update: if dono() ||
+        (logado() && request.auth.uid == uid && !request.resource.data.diff(resource.data)
+          .affectedKeys().hasAny(['perfil', 'permissoes', 'registro']));
+      // Convite é apagado por quem se cadastrou com o mesmo e-mail.
+      allow delete: if dono() ||
+        (logado() && resource.data.convidado == true && resource.data.email == request.auth.token.email);
+    }
+
+    match /pacientes/{id} {
+      allow read: if equipe() || (temCadastro() && eu().pacienteId == id);
+      allow create: if logado(); // ficha criada no cadastro do responsável
+      allow update: if equipe() || (temCadastro() && eu().pacienteId == id && soAltera(['estrelas']));
+    }
+
+    match /agendamentos/{id} {
+      allow read: if equipe() || doMeuPaciente(resource.data);
+      allow write: if equipe();
+    }
+
+    match /solicitacoes/{id} {
+      allow read: if equipe() || doMeuPaciente(resource.data);
+      allow create: if equipe() || doMeuPaciente(request.resource.data);
+      allow update: if equipe();
+    }
+
+    match /evolucoes/{id} {
+      allow read, write: if clinico();
+    }
+
+    match /exercicios/{id} {
+      allow read: if equipe() || doMeuPaciente(resource.data);
+      allow create: if clinico() || dono();
+      // O responsável só registra as práticas feitas em casa.
+      allow update: if clinico() ||
+        (doMeuPaciente(resource.data) && soAltera(['praticasSemana', 'ultimaPratica', 'status']));
+    }
+
+    match /cobrancas/{id} {
+      allow read: if financeiro() || doMeuPaciente(resource.data);
+      allow write: if financeiro();
+    }
+  }
+}
